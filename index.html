@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <news-container></news-container>
+  </div>
+
+  <template id="news-container">
+    <div class="newsList">
+      <div class="newsList__list">
+        <article-list :items="showItems"></article-list>
+      </div>
+      <div class="newsList__pager">
+        <pagination :current-num="page" :max-num="max"></pagination>
+      </div>
+      <div class="newsList__select">
+        <sp-select :current-num="page" :max-num="max"></sp-select>
+      </div>
+    </div>
+  </template>
+
+  <template id="article-list">
+    <div class="articleList">
+      <transition-group class="articleList__body" name="fade" tag="ul">
+        <li class="articleList__item" v-for="(item, index) in items" v-bind:key="item.id">
+          <article class="articleCard">
+            <a class="articleCard__inner" href="#" :href="item.url">
+              <p class="articleCard__img"><img :src="item.img" :alt="item.title"></p>
+              <div class="articleCard__text">
+                <h2 class="articleCard__ttl">{{item.title}}</h2>
+              </div>
+            </a>
+          </article>
+        </li>
+      </transition-group>
+    </div>
+  </template>
+
+  <script>
+    Vue.component('article-list', {
+      template: '#article-list',
+      props: {
+        items: {
+          default: function() {
+            return []
+          },
+          required: true
+        }
+      }
+    });
+  </script>
+
+  <template id="pagination">
+    <nav class="pagination">
+      <ul class="pagination__body">
+        <li class="pagination__item">
+          <router-link class="pagination__btn pagination__btn--prev" :to="{ path: '', query: {page: (parseInt(currentNum) - 1).toString()}}" v-if="currentNum > 1">前へ</router-link>
+          <span class="pagination__btn pagination__btn--prev pagination__btn--disable" v-else>前へ</span>
+        </li>
+        <li class="pagination__item" v-for="(item, index) in pagerData" :key="item">
+          <router-link class="pagination__btn" :to="{ path: '', query: {page: (item).toString()}}" :class="{'pagination__btn--active': (item === currentNum)}">{{item}}</router-link>
+        </li>
+        <li class="pagination__item">
+          <router-link class="pagination__btn pagination__btn--next" :to="{ path: '', query: {page: (parseInt(currentNum) + 1).toString()}}" v-if="currentNum < maxNum">次へ</router-link>
+          <span class="pagination__btn pagination__btn--next pagination__btn--disable" v-else>次へ</span>
+        </li>
+      </ul>
+    </nav>
+  </template>
+
+  <script>
+    Vue.component('pagination', {
+      template: '#pagination',
+      props: {
+        currentNum: {
+          type: Number,
+          default: 1,
+          required: true
+        },
+        maxNum: {
+          type: Number,
+          default: 1,
+          required: true
+        },
+      },
+      computed: {
+        pagerData: function() {
+          if(this.maxNum <= 5) {
+            var arr = [];
+            for(var i = 1; i <= this.maxNum; i++) {
+              arr.push(i);
+            }
+            return arr;
+          }
+          else if(this.currentNum <= 3) {
+            return [1,2,3,4,5];
+          }
+          else if(this.currentNum >= this.maxNum - 2) {
+            return [this.maxNum-4,this.maxNum-3,this.maxNum-2,this.maxNum-1,this.maxNum];
+          }
+          else {
+            return [this.currentNum-2,this.currentNum-1,this.currentNum,this.currentNum+1,this.currentNum+2];
+          }
+        }
+      }
+    });
+  </script>
+
+  <template id="sp-select">
+    <div class="spPager">
+      <ul class="spPager__body">
+        <li class="spPager__item spPager__item--btn">
+          <router-link class="spPager__btn spPager__btn--prev" :to="{ path: '', query: {page: (parseInt(currentNum) - 1).toString()}}" v-if="currentNum > 1">前へ</router-link>
+          <span class="spPager__btn spPager__btn--prev spPager__btn--disable" v-else>前へ</span>
+        </li>
+        <li class="spPager__item spPager__item--select">
+          <select class="spPager__select" v-model="selectValue" @change="selectChange()">
+            <option v-for="option in pages" :value="parseInt(option.val)" :key="option.val">{{option.text}}</option>
+          </select>
+          <p class="spPager__selectlabel"> {{currentNum}} / {{maxNum}}</p>
+        </li>
+        <li class="spPager__item spPager__item--btn">
+          <router-link class="spPager__btn spPager__btn--next" :to="{ path: '', query: {page: (parseInt(currentNum) + 1).toString()}}" v-if="currentNum < maxNum">次へ</router-link>
+          <span class="spPager__btn spPager__btn--next spPager__btn--disable" v-else>次へ</span>
+        </li>
+      </ul>
+    </div>
+  </template>
+  <script>
+    Vue.component('sp-select', {
+      template: '#sp-select',
+      data: function() {
+        return {
+          selectValue: 1
+        }
+      },
+      props: {
+        currentNum: {
+          type: Number,
+          default: 1,
+          required: true
+        },
+        maxNum: {
+          type: Number,
+          default: 1,
+          required: true
+        },
+      },
+      computed: {
+        pages: function() {
+          var obj = [];
+          for(var i = 0; i < this.maxNum; i++) {
+            obj[i] = {
+              'val': i+1,
+              'text': i+1+'ページ'
+            }
+          }
+          return obj;
+        }
+      },
+      methods: {
+        selectChange: function() {
+          this.$router.push({ path: '', query: {page: this.selectValue}});
+        }
+      }
+    });
+  </script>
+
+  <script>
+    var routes = [{
+      path: location.pathname,
+      meta: {
+        title: document.title
+      }
+    }];
+    var router = new VueRouter({
+      mode: 'history',
+      routes: routes
+    })
+    var list = new Vue({
+      router: router,
+      template: '#news-container',
+      data: function() {
+        return {
+          page: 1,
+          max: 5,
+          showCount: 12,
+          items: [],
+        }
+      },
+      /* Vue インスタンスに組み込まれる算出プロパティ
+      補足：アロー関数を使用する場合、this はコンポーネントインスタンスにならない */
+      computed: {
+        showItems: function() {
+          var startItem = (this.page - 1) * this.showCount;
+          return this.items.slice(startItem, startItem + this.showCount);
+        }
+      },
+      /* Vue インスタンスに組み込まれるメソッド
+      */
+      methods: {
+        getJson: function(){
+          axios.get('json/data.json')
+          .then(function (response) {
+            var res_data = response.data;
+            list.items = res_data;
+            list.max = Math.ceil(list.items.length / list.showCount);
+          }).catch(function (error) {
+            console.log(error);
+          });
+        },
+        queryPage: function() {
+          if(typeof this.$route.query.page !== 'undefined' && this.$route.query.page !== null && this.$route.query.page !== '') {
+            this.page = parseInt(this.$route.query.page);
+          }
+          else {
+            this.page = 1;
+          }
+        }
+      },
+      /* データの変更を監視する
+      補足：Vue-routerを使った場合、$routeオブジェクトでパラメーターの変更（画面遷移）を監視 */
+      watch: {
+        '$route': function() {
+          this.queryPage();
+        }
+      },
+      /* インスタンスが作成された後に実行
+         この段階ではelementプロパティは呼ばれていない */
+      created: function() {
+        this.getJson();
+      },
+      /* elementへのマウントされた後処理される
+         SSRの場合は使えない */
+      mounted: function () {
+        this.queryPage();
+      }
+    /* マウント対象のDOM要素がUI操作や通信などで遅延的に
+       追加される場合は、$mountメソッドでマウントさせる */
+    }).$mount('#app');
+  </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 30px;
+}
+
+/* 記事一覧のレイアウト */
+.newsList {
+  max-width: 860px;
+  margin: auto;
+}
+.newsList__list {
+}
+.newsList__pager {
+  margin-top: 20px;
+}
+.newsList__select {
+  margin-top: 20px;
+}
+
+/* 記事のレイアウト */
+.articleList__body {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin: -20px -10px 0;
+}
+@media screen and (max-width: 768px) {
+  .articleList__body {
+    margin: -20px 0 0;
+  }
+}
+
+.articleList__item {
+  width: 25%;
+  margin-top: 20px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 768px) {
+  .articleList__item {
+    width: 50%;
+  }
+}
+
+.articleList__item.fade-enter {
+  position: absolute;
+  opacity: 0;
+}
+.articleList__item.fade-enter-active {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+/* 記事のコンポーネント（カード型） */
+.articleCard__inner {
+  display: block;
+}
+.articleCard__img {
+
+}
+.articleCard__img img {
+  width: 100%;
+  height: auto;
+}
+
+/* PC用ページネーション  */
+@media screen and (max-width: 768px) {
+  .pagination {
+    display: none;
+  }
+}
+
+.pagination__body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pagination__item {
+  padding: 0 5px;
+}
+.pagination__btn {
+  display: block;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+}
+.pagination__btn--active {
+  background: #ccc;
+}
+.pagination__btn--disable {
+  color: #ccc;
+}
+
+/* SP用ページネーション  */
+.spPager__body {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.spPager__item {
+  position: relative;
+  padding: 0 5px;
+}
+.spPager__select {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  opacity: 0;
+}
