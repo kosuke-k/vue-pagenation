@@ -38,7 +38,7 @@ methods: {
 ```
 
 ### View
-ルートテンプレート内に親コンポーネント`<news-container>`を登録。<br />
+ルートテンプレート内に親コンポーネント`<news-container>`を登録。<br />
 テンプレート`<news-container>`では、下記の子コンポーネントを読み込みます。
 
 - 記事の表示用：`<article-list>`
