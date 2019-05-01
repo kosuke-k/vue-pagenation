@@ -2,30 +2,25 @@
 
 Vue.js + Vue Routerで、ブラウザバックに対応したページネーションを作成しました。
 
-### 仕様
+### 要件
 - Vue.js + Vue Routerだけで実装
 - ブラウザの「戻る」「進む」でページ遷移可能にする
-- PCではページ番号を最大5件表示、SPではセレクトボックスでページ番号を選択
+- ページ送りボタンは、PCのみ表示（最大5件）、SPではセレクトボックスにする
 - ページ送りボタンは、1ページ目と最後のページでは無効にする
+- データは、Jsonファイルから読み込む
 
-Vue.jsでのページネーションは、探すと色々サンプル見つかりますが、ブラウザバックに対応したサンプルは意外と少ないのと、スマホでの見せ方も考えると、自分で作成した方がよいかと思い、Vue Routerの勉強も兼ねて作ってみました。
+[Demo](https://kohskeleton.github.io/vue-pagenation/)
+
+
+Vue.jsでのページネーションは、探すと色々サンプル見つかりますが、ブラウザバックに対応したサンプルは意外と少なく、スマホでの見せ方も検討する必要があるため、Vue Routerの勉強も兼ねて作ってみました。サンプルということで、Vue.jsの処理はHTMLに埋め込んでいます。
 
 単純にページネーションさせるだけなら、[Vue.js Examples](https://vuejsexamples.com/tag/pagination/)のサンプルとか参考にしてみるといいかと。
 
 
-CDNを利用するので、公式サイトに合わせて、[jsdelivr](https://cdn.jsdelivr.net/npm/vue/)でVue.jsを、vue-router.jsとaxios.jsは[unpkg](https://unpkg.com/)で読み込みます。
+CDNを利用するので、公式サイトに合わせて、[jsdelivr](https://cdn.jsdelivr.net/npm/vue/)でVue.jsを、vue-router.jsとaxios.jsは[unpkg](https://unpkg.com/)で読み込みます。<br />
 (cdnjsは同期に少し時間がかかるため、最新版ではない可能性があるよう）
 
 ### axiosを使ってAjax通信でJsonを取得
-`
-axiosとは
-Node.jsで動くAjaxリクエストを送るためのPromiseベースのHTTPクライアント。
-[npmの公式ページより](https://www.npmjs.com/package/axios)
-`
-
-Vueのドキュメントで推奨されているAjax通信のライブラリで、Jsonを取得する際によく利用されるみたい。
-
-取得したJsonデータを、データオブジェクトで定義した配列[items]に格納し、items.lengthを表示件数（1ページ分）で割って切り上げた数値を最大のページ番号（max）に設定します。
 
 ```rb
 methods: {
@@ -42,13 +37,13 @@ methods: {
 }
 ```
 
-### 全体的なレイアウト
-ルートテンプレート内に親コンポーネント<news-container>を登録。
-テンプレート<news-container>では、下記の子コンポーネントを読み込みます。
+### View
+ルートテンプレート内に親コンポーネント`<news-container>`を登録。<br />
+テンプレート`<news-container>`では、下記の子コンポーネントを読み込みます。
 
-- 記事の表示用：<article-list>
-- PC用ページネーション：<pagination>
-- SP用セレクトボックス：<sp-select>
+- 記事の表示用：`<article-list>`
+- PC用ページネーション：`<pagination>`
+- SP用セレクトボックス：`<sp-select>`
 
 ```rb
 <div id="app">
@@ -69,7 +64,6 @@ methods: {
   </div>
 </template>
 ```
-
 
 Vue インスタンスに router プロパティを渡してルータを初期化し、templateに表示するための要素をIDで指定します。
 ```rb
